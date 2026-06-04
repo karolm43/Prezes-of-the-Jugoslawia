@@ -82,12 +82,9 @@
                 messageEl.innerText = "Błąd: " + error.message;
                 btn.innerText = "Zaloguj do systemu";
             } else {
-                // Sukces!
-                messageEl.style.color = "#55ff55"; // Kolor zielony
+                messageEl.style.color = "#55ff55";
                 messageEl.innerText = "Zalogowano pomyślnie!";
-                
-                // Tutaj później dodamy kod przenoszący do ekranu gry
-                // np. window.location.href = "gra.html";
+                window.location.href = "dashboard.html";
             }
         });
     </script>
