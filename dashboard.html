@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKN Jugosławia - Panel Zarządzania</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        :root {
+            --yu-blue: #003893;
+            --yu-red: #DE0000;
+            --yu-yellow: #FCD116;
+            --bg-dark: #121212;
+            --bg-panel: #1e1e1e;
+            --text-light: #f5f5f5;
+            --border-color: #333;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .header {
+            width: 100%;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            padding: 15px 0;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            padding: 15px 40px;
+        }
+        .flag-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            display: flex;
+            flex-direction: column;
+        }
+        .flag-stripe { height: 2px; width: 100%; }
+        .stripe-blue { background-color: var(--yu-blue); }
+        .stripe-white { background-color: #ffffff; }
+        .stripe-red { background-color: var(--yu-red); }
+        
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .star {
+            color: var(--yu-red);
+            text-shadow: -1px -1px 0 var(--yu-yellow), 1px -1px 0 var(--yu-yellow), -1px 1px 0 var(--yu-yellow), 1px 1px 0 var(--yu-yellow);
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+        h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
+        
+        .logout-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: #aaa;
+            padding: 8px 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .logout-btn:hover { background: #333; color: white; }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            max-width: 1000px;
+            padding: 30px 20px;
+            box-sizing: border-box;
+        }
+
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 20px;
+        }
+        .panel-full { grid-column: 1 / -1; }
+        
+        .panel h2 {
+            margin-top: 0;
+            font-size: 1rem;
+            color: #888;
+            text-transform: uppercase;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .stat-box {
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+
+        .agenda-content {
+            color: var(--yu-yellow);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border-left: 3px solid var(--yu-red);
+            padding-left: 15px;
+            background: rgba(222, 0, 0, 0.05);
+            padding: 15px;
+        }
+
+        .event-box {
+            background: #2a2a2a;
+            padding: 20px;
+            border: 1px solid #444;
+            border-radius: 2px;
+        }
+        .event-title {
+            font-size: 1.2rem;
+            margin: 0 0 10px 0;
+            color: white;
+        }
+        .event-desc {
+            color: #ccc;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+        
+        .vote-buttons {
+            display: flex;
+            gap: 15px;
+        }
+        .btn-vote {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            font-weight: bold;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .btn-vote:hover { opacity: 0.8; }
+        .btn-za { background: var(--yu-blue); color: white; }
+        .btn-przeciw { background: var(--yu-red); color: white; }
+
+    </style>
+</head>
+<body>
+
+    <header class="header">
+        <div class="flag-header">
+            <div class="flag-stripe stripe-blue"></div>
+            <div class="flag-stripe stripe-white"></div>
+            <div class="flag-stripe stripe-red"></div>
+        </div>
+        <div class="brand">
+            <div class="star">★</div>
+            <h1>SKN Jugosławia</h1>
+        </div>
+        <button class="logout-btn" id="logout-btn">Wyloguj sesję</button>
+    </header>
+
+    <div class="dashboard-grid">
+        <div class="panel panel-full">
+            <h2>Stan Państwa (Zarząd Centralny)</h2>
+            <div class="stats-container">
+                <div class="stat-box">
+                    <div class="stat-value">145k</div>
+                    <div class="stat-label">Budżet Operacyjny</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">68%</div>
+                    <div class="stat-label">Reputacja</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">42</div>
+                    <div class="stat-label">Wpływy Polityczne</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Prywatna Agenda</h2>
+            <div class="agenda-content">
+                <strong>Cel: Sabotaż Finansowy</strong><br><br>
+                Doprowadź do spadku Budżetu Operacyjnego poniżej 50k przed końcem kwartału. Utrzymaj własną Reputację powyżej 30%, aby uniknąć wykrycia.
+            </div>
+        </div>
+
+        <div class="panel">
+            <h2>Aktywne Wydarzenie (Głosowanie)</h2>
+            <div class="event-box">
+                <h3 class="event-title">Propozycja: Defilada Majowa</h3>
+                <p class="event-desc">
+                    Zorganizowanie ogólnokrajowej defilady podniesie nastroje społeczne, jednak wymaga relokacji znacznych środków z funduszu infrastrukturalnego.
+                    <br><br>
+                    <strong>Skutki:</strong> +15% Reputacja, -30k Budżet.
+                </p>
+                <div class="vote-buttons">
+                    <button class="btn-vote btn-za">Głosuj ZA</button>
+                    <button class="btn-vote btn-przeciw">Głosuj PRZECIW</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const client = supabase.createClient('TWÓJ_ADRES_URL_Z_PANELU', 'TWÓJ_KLUCZ_ANON_Z_PANELU');
+
+        // Weryfikacja sesji
+        async function checkSession() {
+            const { data: { session } } = await client.auth.getSession();
+            if (!session) {
+                window.location.href = 'index.html';
+            }
+        }
+        checkSession();
+
+        // Obsługa wylogowania
+        document.getElementById('logout-btn').addEventListener('click', async () => {
+            await client.auth.signOut();
+            window.location.href = 'index.html';
+        });
+    </script>
+</body>
+</html>
