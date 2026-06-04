@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SKN Jugosławia - Aparat Centralny</title>
+    <title>SKN Jugosławia - Logowanie</title>
     <style>
         :root {
             --yu-blue: #003893;
@@ -30,7 +30,7 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.8);
             text-align: center;
             width: 100%;
-            max-width: 400px;
+            max-width: 350px;
             position: relative;
             overflow: hidden;
             border: 1px solid #333;
@@ -52,8 +52,15 @@
         .stripe-white { background-color: #ffffff; }
         .stripe-red { background-color: var(--yu-red); }
         
+        .star {
+            color: var(--yu-red);
+            text-shadow: -1px -1px 0 var(--yu-yellow), 1px -1px 0 var(--yu-yellow), -1px 1px 0 var(--yu-yellow), 1px 1px 0 var(--yu-yellow);
+            font-size: 2.5rem;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
         h1 {
-            margin: 10px 0 5px 0;
+            margin: 0 0 5px 0;
             font-size: 1.4rem;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -63,19 +70,13 @@
             font-size: 0.9rem;
             margin-bottom: 25px;
         }
-        .star {
-            color: var(--yu-red);
-            text-shadow: -1px -1px 0 var(--yu-yellow), 1px -1px 0 var(--yu-yellow), -1px 1px 0 var(--yu-yellow), 1px 1px 0 var(--yu-yellow);
-            font-size: 2.5rem;
-            line-height: 1;
-        }
-        .input-group {
-            margin: 15px 0;
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
             text-align: left;
         }
         label {
-            display: block;
-            margin-bottom: 5px;
             font-size: 0.8rem;
             color: #aaa;
             text-transform: uppercase;
@@ -94,15 +95,12 @@
             outline: none;
             border-color: var(--yu-blue);
         }
-        .btn-group {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 25px;
-        }
         button {
+            margin-top: 10px;
             padding: 14px;
             border: none;
+            background-color: var(--yu-red);
+            color: white;
             border-radius: 2px;
             font-weight: bold;
             cursor: pointer;
@@ -110,16 +108,9 @@
             transition: background 0.2s;
             font-size: 0.9rem;
         }
-        .btn-president {
-            background-color: var(--yu-red);
-            color: white;
+        button:hover {
+            background-color: #a30000;
         }
-        .btn-president:hover { background-color: #a30000; }
-        .btn-board {
-            background-color: var(--yu-blue);
-            color: white;
-        }
-        .btn-board:hover { background-color: #00225c; }
     </style>
 </head>
 <body>
@@ -133,22 +124,19 @@
         
         <div class="star">★</div>
         <h1>SKN Jugosławia</h1>
-        <p>Panel Kontrolny Sesji</p>
+        <p>Autoryzacja Danych</p>
 
-        <div class="input-group">
-            <label for="username">Identyfikator</label>
-            <input type="text" id="username" placeholder="Wprowadź imię..." required>
-        </div>
-
-        <div class="input-group">
-            <label for="roomcode">Kod Sesji</label>
-            <input type="text" id="roomcode" placeholder="Wymagane dla Zarządu">
-        </div>
-
-        <div class="btn-group">
-            <button class="btn-president">Zainicjuj Sesję (Prezes)</button>
-            <button class="btn-board">Dołącz do Obrad (Zarząd)</button>
-        </div>
+        <form id="login-form">
+            <div>
+                <label for="login">Identyfikator</label>
+                <input type="text" id="login" required autocomplete="username">
+            </div>
+            <div>
+                <label for="password">Hasło dostępu</label>
+                <input type="password" id="password" required autocomplete="current-password">
+            </div>
+            <button type="submit">Zaloguj do systemu</button>
+        </form>
     </div>
 
 </body>
