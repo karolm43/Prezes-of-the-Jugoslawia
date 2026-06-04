@@ -206,10 +206,9 @@
         </div>
 
         <div class="panel">
-            <h2>Prywatna Agenda</h2>
-            <div class="agenda-content">
-                <strong>Cel: Sabotaż Finansowy</strong><br><br>
-                Doprowadź do spadku Budżetu Operacyjnego poniżej 50k przed końcem kwartału. Utrzymaj własną Reputację powyżej 30%, aby uniknąć wykrycia.
+            <h2>Classified Dossier</h2>
+            <div id="private-profile" class="agenda-content">
+                Fetching isolated data stream...
             </div>
         </div>
 
@@ -241,7 +240,32 @@
             }
         }
         checkSession();
-
+        async function executeProfileRetrieval() {
+            const { data: { user } } = await client.auth.getUser();
+            
+            if (!user) return;
+        
+            const { data, error } = await client
+                .from('profiles')
+                .select('alias, department, private_agenda')
+                .eq('id', user.id)
+                .single();
+        
+            const container = document.getElementById('private-profile');
+        
+            if (error) {
+                container.innerText = "Access Denied or Record Unallocated.";
+                return;
+            }
+        
+            container.innerHTML = `
+                <strong>Alias:</strong> ${data.alias || 'Unassigned'}<br>
+                <strong>Department:</strong> ${data.department || 'Unassigned'}<br><br>
+                <strong>Active Directive:</strong><br>${data.private_agenda || 'Standby'}
+            `;
+        }
+        
+        executeProfileRetrieval();
         // Obsługa wylogowania
         document.getElementById('logout-btn').addEventListener('click', async () => {
             await client.auth.signOut();
