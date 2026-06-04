@@ -247,7 +247,7 @@
         
             const { data, error } = await client
                 .from('profiles')
-                .select('alias, department, private_agenda')
+                .select('alias, Departament, Agenda')
                 .eq('id', user.id)
                 .single();
         
