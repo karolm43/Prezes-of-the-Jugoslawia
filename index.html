@@ -2,10 +2,154 @@
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
-    <title>SKN Jugosławia - Gra</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKN Jugosławia - Aparat Centralny</title>
+    <style>
+        :root {
+            --yu-blue: #003893;
+            --yu-red: #DE0000;
+            --yu-yellow: #FCD116;
+            --bg-dark: #121212;
+            --text-light: #f5f5f5;
+        }
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            background: #1e1e1e;
+            padding: 2.5rem 2rem;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        .flag-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .flag-stripe {
+            height: 5px;
+            width: 100%;
+        }
+        .stripe-blue { background-color: var(--yu-blue); }
+        .stripe-white { background-color: #ffffff; }
+        .stripe-red { background-color: var(--yu-red); }
+        
+        h1 {
+            margin: 10px 0 5px 0;
+            font-size: 1.4rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        p {
+            color: #888;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+        }
+        .star {
+            color: var(--yu-red);
+            text-shadow: -1px -1px 0 var(--yu-yellow), 1px -1px 0 var(--yu-yellow), -1px 1px 0 var(--yu-yellow), 1px 1px 0 var(--yu-yellow);
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+        .input-group {
+            margin: 15px 0;
+            text-align: left;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.8rem;
+            color: #aaa;
+            text-transform: uppercase;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #444;
+            background: #2a2a2a;
+            color: #fff;
+            border-radius: 2px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input:focus {
+            outline: none;
+            border-color: var(--yu-blue);
+        }
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+        button {
+            padding: 14px;
+            border: none;
+            border-radius: 2px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: background 0.2s;
+            font-size: 0.9rem;
+        }
+        .btn-president {
+            background-color: var(--yu-red);
+            color: white;
+        }
+        .btn-president:hover { background-color: #a30000; }
+        .btn-board {
+            background-color: var(--yu-blue);
+            color: white;
+        }
+        .btn-board:hover { background-color: #00225c; }
+    </style>
 </head>
 <body>
-    <h1>Lobby - SKN Jugosławia</h1>
-    <p>Oczekiwanie na parametry sesji.</p>
+
+    <div class="container">
+        <div class="flag-header">
+            <div class="flag-stripe stripe-blue"></div>
+            <div class="flag-stripe stripe-white"></div>
+            <div class="flag-stripe stripe-red"></div>
+        </div>
+        
+        <div class="star">★</div>
+        <h1>SKN Jugosławia</h1>
+        <p>Panel Kontrolny Sesji</p>
+
+        <div class="input-group">
+            <label for="username">Identyfikator</label>
+            <input type="text" id="username" placeholder="Wprowadź imię..." required>
+        </div>
+
+        <div class="input-group">
+            <label for="roomcode">Kod Sesji</label>
+            <input type="text" id="roomcode" placeholder="Wymagane dla Zarządu">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-president">Zainicjuj Sesję (Prezes)</button>
+            <button class="btn-board">Dołącz do Obrad (Zarząd)</button>
+        </div>
+    </div>
+
 </body>
 </html>
