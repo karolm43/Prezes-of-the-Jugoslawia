@@ -26,7 +26,9 @@
     </style>
 </head>
 <body>
-
+    <audio id="ambient-audio" loop preload="auto">
+        <source src="theme.ogg" type="audio/ogg">
+    </audio>
     <div class="container">
         <div class="flag-header">
             <div class="flag-stripe stripe-blue"></div>
@@ -87,6 +89,14 @@
                 window.location.href = "dashboard.html";
             }
         });
+            const bgMusic = document.getElementById('ambient-audio');
+            bgMusic.volume = 0.15; // Niskie natężenie dźwięku dla tła
+            
+            document.body.addEventListener('click', () => {
+                if (bgMusic.paused) {
+                    bgMusic.play();
+                }
+            }, { once: true });
     </script>
 
 </body>
