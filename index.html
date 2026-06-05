@@ -1,103 +1,227 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+    <!-- ============================================================================
+         METADATA
+         ============================================================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKN Jugosławia - Logowanie</title>
+
+    <!-- ============================================================================
+         STYLESHEETS - Wyklęte CSS do osobnych plików
+         ============================================================================ -->
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/login.css">
+
+    <!-- ============================================================================
+         EXTERNAL LIBRARIES - Supabase dla autentykacji i bazy danych
+         ============================================================================ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        /* Styl pozostaje bez zmian, taki sam jak w poprzednim kroku */
-        :root { --yu-blue: #003893; --yu-red: #DE0000; --yu-yellow: #FCD116; --bg-dark: #121212; --text-light: #f5f5f5; }
-        body { margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: var(--bg-dark); color: var(--text-light); display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .container { background: #1e1e1e; padding: 2.5rem 2rem; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); text-align: center; width: 100%; max-width: 350px; position: relative; overflow: hidden; border: 1px solid #333; }
-        .flag-header { position: absolute; top: 0; left: 0; width: 100%; height: 15px; display: flex; flex-direction: column; }
-        .flag-stripe { height: 5px; width: 100%; }
-        .stripe-blue { background-color: var(--yu-blue); } .stripe-white { background-color: #ffffff; } .stripe-red { background-color: var(--yu-red); }
-        .star { color: var(--yu-red); text-shadow: -1px -1px 0 var(--yu-yellow), 1px -1px 0 var(--yu-yellow), -1px 1px 0 var(--yu-yellow), 1px 1px 0 var(--yu-yellow); font-size: 2.5rem; line-height: 1; margin-bottom: 10px; }
-        h1 { margin: 0 0 5px 0; font-size: 1.4rem; text-transform: uppercase; letter-spacing: 1px; }
-        p { color: #888; font-size: 0.9rem; margin-bottom: 25px; }
-        form { display: flex; flex-direction: column; gap: 15px; text-align: left; }
-        label { font-size: 0.8rem; color: #aaa; text-transform: uppercase; }
-        input { width: 100%; padding: 12px; border: 1px solid #444; background: #2a2a2a; color: #fff; border-radius: 2px; box-sizing: border-box; font-size: 1rem; }
-        input:focus { outline: none; border-color: var(--yu-blue); }
-        button { margin-top: 10px; padding: 14px; border: none; background-color: var(--yu-red); color: white; border-radius: 2px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: background 0.2s; font-size: 0.9rem; }
-        button:hover { background-color: #a30000; }
-        #message { margin-top: 15px; font-size: 0.9rem; color: #ff5555; }
-    </style>
 </head>
-<body>
+
+<body class="login-page">
+    <!-- ============================================================================
+         BACKGROUND AUDIO - Muzyka ambientna
+         ============================================================================ -->
     <audio id="ambient-audio" loop preload="auto">
         <source src="theme.ogg" type="audio/ogg">
     </audio>
-    <div class="container">
+
+    <!-- ============================================================================
+         AUDIO TOGGLE BUTTON - Przycisk do sterowania muzyką
+         ============================================================================ -->
+    <button id="audio-toggle" title="Włącz/Wyłącz muzykę">🔊</button>
+
+    <!-- ============================================================================
+         LOGIN CONTAINER - Główny formularz logowania
+         ============================================================================ -->
+    <div class="login-container">
+        <!-- Yugoslav Flag Header -->
         <div class="flag-header">
             <div class="flag-stripe stripe-blue"></div>
             <div class="flag-stripe stripe-white"></div>
             <div class="flag-stripe stripe-red"></div>
         </div>
-        
-        <div class="star">★</div>
+
+        <!-- Title & Branding -->
+        <div class="star large">★</div>
         <h1>SKN Jugosławia</h1>
         <p>Autoryzacja Danych</p>
 
+        <!-- Login Form -->
         <form id="login-form">
-            <div>
+            <!-- Email Input -->
+            <div class="form-group">
                 <label for="email">E-mail (Identyfikator)</label>
-                <input type="email" id="email" required autocomplete="username">
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="user@example.com"
+                    required
+                    autocomplete="username">
             </div>
-            <div>
+
+            <!-- Password Input -->
+            <div class="form-group">
                 <label for="password">Hasło dostępu</label>
-                <input type="password" id="password" required autocomplete="current-password">
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="••••••••"
+                    required
+                    autocomplete="current-password">
             </div>
-            <button type="submit" id="submit-btn">Zaloguj do systemu</button>
+
+            <!-- Submit Button -->
+            <button type="submit" id="submit-btn" class="btn-primary login-form-submit">
+                Zaloguj do systemu
+            </button>
         </form>
-        <div id="message"></div>
+
+        <!-- Status/Error Message -->
+        <div id="message" class="message"></div>
     </div>
 
+    <!-- ============================================================================
+         SCRIPTS - Logika aplikacji
+         ============================================================================ -->
+    <script src="js/auth.js"></script>
     <script>
-        // 1. Inicjalizacja połączenia
-        const supabaseUrl = 'https://pswpuernfyfsijnscnwt.supabase.co';
-        const supabaseKey = 'sb_publishable_XUyqOs0SmAK4tezMYjdBDg_7l5S6bbb';
-        const client = supabase.createClient(supabaseUrl, supabaseKey);
+        /**
+         * ============================================================================
+         * LOGIN PAGE LOGIC
+         * ============================================================================
+         * 
+         * Funkcje:
+         * - Inicjalizacja Supabase
+         * - Obsługa formularza logowania
+         * - Wyciszenie/włączenie muzyki
+         * - Weryfikacja sesji
+         */
 
-        // 2. Przechwytywanie kliknięcia "Zaloguj"
-        document.getElementById('login-form').addEventListener('submit', async function(event) {
-            event.preventDefault(); // Zatrzymuje przeładowanie strony
-            
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            const messageEl = document.getElementById('message');
-            const btn = document.getElementById('submit-btn');
+        // ========== KONFIGURACJA SUPABASE ==========
+        // TODO: Te wartości znajdziesz w Supabase Dashboard > Settings > API
+        const SUPABASE_URL = 'https://pswpuernfyfsijnscnwt.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_XUyqOs0SmAK4tezMYjdBDg_7l5S6bbb';
 
-            btn.innerText = "Logowanie...";
-            messageEl.innerText = "";
-            messageEl.style.color = "#ff5555"; // Kolor na błędy
+        // Stwórz klienta Supabase
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const auth = new AuthManager(supabaseClient);
 
-            // 3. Wysłanie zapytania do Supabase
-            const { data, error } = await client.auth.signInWithPassword({
-                email: email,
-                password: password,
-            });
+        // ========== DOM ELEMENTS ==========
+        const loginForm = document.getElementById('login-form');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const submitBtn = document.getElementById('submit-btn');
+        const messageEl = document.getElementById('message');
+        const bgAudio = document.getElementById('ambient-audio');
+        const audioToggle = document.getElementById('audio-toggle');
+
+        // ========== OBSŁUGA FORMULARZA LOGOWANIA ==========
+        loginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const email = emailInput.value.trim();
+            const password = passwordInput.value;
+
+            // Walidacja
+            if (!email || !password) {
+                showMessage('Wypełnij wszystkie pola!', 'error');
+                return;
+            }
+
+            // Wyświetl loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Logowanie...';
+            hideMessage();
+
+            // Spróbuj zalogować
+            const { user, error } = await auth.login(email, password);
 
             if (error) {
-                // Jeśli coś pójdzie nie tak (złe hasło, brak konta)
-                messageEl.innerText = "Błąd: " + error.message;
-                btn.innerText = "Zaloguj do systemu";
+                // Błąd logowania
+                showMessage(`❌ ${error.message}`, 'error');
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Zaloguj do systemu';
+                return;
+            }
+
+            // Zalogowanie się powiodło
+            showMessage('✅ Zalogowano pomyślnie! Przechodzę do gry...', 'success');
+            submitBtn.innerText = 'Wchodzę do gry...';
+
+            // Poczekaj 1 sekundę i przekieruj
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1000);
+        });
+
+        // ========== OBSŁUGA MUZYKI ==========
+        /**
+         * Ustaw głośność muzyki na niskie natężenie
+         */
+        bgAudio.volume = 0.15;
+
+        /**
+         * Przycisk toggle do wyciszenia/włączenia muzyki
+         */
+        audioToggle.addEventListener('click', () => {
+            if (bgAudio.paused) {
+                bgAudio.play();
+                audioToggle.classList.remove('muted');
+                audioToggle.textContent = '🔊';
             } else {
-                messageEl.style.color = "#55ff55";
-                messageEl.innerText = "Zalogowano pomyślnie!";
-                window.location.href = "dashboard.html";
+                bgAudio.pause();
+                audioToggle.classList.add('muted');
+                audioToggle.textContent = '🔇';
             }
         });
-            const bgMusic = document.getElementById('ambient-audio');
-            bgMusic.volume = 0.15; // Niskie natężenie dźwięku dla tła
-            
-            document.body.addEventListener('click', () => {
-                if (bgMusic.paused) {
-                    bgMusic.play();
-                }
-            }, { once: true });
-    </script>
 
+        /**
+         * Rozpocznij muzykę gdy użytkownik kliknie gdziekolwiek na stronie
+         * (ze względu na autoplay policies w przeglądarkach)
+         */
+        document.body.addEventListener('click', () => {
+            if (bgAudio.paused) {
+                bgAudio.play();
+            }
+        }, { once: true });
+
+        // ========== UTILITY FUNCTIONS ==========
+        /**
+         * Wyświetl wiadomość (błąd/sukces/info)
+         * @param {string} text - Treść wiadomości
+         * @param {string} type - Typ: 'error', 'success', 'info'
+         */
+        function showMessage(text, type = 'info') {
+            messageEl.innerText = text;
+            messageEl.className = `message show ${type}`;
+        }
+
+        /**
+         * Ukryj wiadomość
+         */
+        function hideMessage() {
+            messageEl.classList.remove('show');
+        }
+
+        // ========== PAGE LOAD ==========
+        /**
+         * Sprawdź czy użytkownik jest już zalogowany
+         * Jeśli tak - przejdź do dashboard
+         */
+        window.addEventListener('DOMContentLoaded', async () => {
+            console.log('🎮 Login page loaded');
+            const { user, error } = await auth.checkSession();
+            if (user) {
+                console.log('✅ User already logged in, redirecting...');
+                window.location.href = 'dashboard.html';
+            }
+        });
+    </script>
 </body>
+
 </html>

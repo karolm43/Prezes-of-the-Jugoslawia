@@ -1,0 +1,289 @@
+/* ============================================================================
+   COMMON STYLES - Wspólne style dla całej aplikacji
+   ============================================================================ */
+
+:root {
+    --yu-blue: #003893;
+    --yu-red: #DE0000;
+    --yu-yellow: #FCD116;
+    --bg-dark: #121212;
+    --bg-panel: #1e1e1e;
+    --text-light: #f5f5f5;
+    --text-muted: #888;
+    --text-light-muted: #aaa;
+    --border-color: #333;
+    --border-light: #444;
+    --button-hover: #a30000;
+    --success: #55ff55;
+    --error: #ff5555;
+    --transition: 0.2s ease;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    line-height: 1.5;
+}
+
+/* ============================================================================
+   YUGOSLAV FLAG HEADER
+   ============================================================================ */
+
+.flag-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    display: flex;
+    flex-direction: column;
+}
+
+.flag-stripe {
+    height: 2px;
+    width: 100%;
+}
+
+.stripe-blue {
+    background-color: var(--yu-blue);
+}
+
+.stripe-white {
+    background-color: #ffffff;
+}
+
+.stripe-red {
+    background-color: var(--yu-red);
+}
+
+/* ============================================================================
+   STAR ICON
+   ============================================================================ */
+
+.star {
+    color: var(--yu-red);
+    text-shadow: 
+        -1px -1px 0 var(--yu-yellow),
+        1px -1px 0 var(--yu-yellow),
+        -1px 1px 0 var(--yu-yellow),
+        1px 1px 0 var(--yu-yellow);
+    font-size: 1.5rem;
+    line-height: 1;
+}
+
+.star.large {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+/* ============================================================================
+   BUTTONS
+   ============================================================================ */
+
+button {
+    font-family: inherit;
+    cursor: pointer;
+    transition: all var(--transition);
+    border-radius: 2px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+.btn-primary {
+    padding: 14px;
+    border: none;
+    background-color: var(--yu-red);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--button-hover);
+}
+
+.btn-secondary {
+    background: transparent;
+    border: 1px solid #555;
+    color: var(--text-light-muted);
+    padding: 8px 15px;
+    font-size: 0.8rem;
+}
+
+.btn-secondary:hover {
+    background: #333;
+    color: white;
+    border-color: #666;
+}
+
+.btn-vote {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: opacity var(--transition);
+}
+
+.btn-vote:hover {
+    opacity: 0.8;
+}
+
+.btn-yes {
+    background: var(--yu-blue);
+    color: white;
+}
+
+.btn-no {
+    background: var(--yu-red);
+    color: white;
+}
+
+/* ============================================================================
+   FORM ELEMENTS
+   ============================================================================ */
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+label {
+    font-size: 0.8rem;
+    color: var(--text-light-muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 5px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--border-light);
+    background: #2a2a2a;
+    color: white;
+    font-family: inherit;
+    border-radius: 2px;
+    font-size: 1rem;
+    transition: border-color var(--transition);
+}
+
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: var(--yu-blue);
+}
+
+/* ============================================================================
+   MESSAGES
+   ============================================================================ */
+
+.message {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    padding: 10px;
+    border-radius: 2px;
+    display: none;
+}
+
+.message.show {
+    display: block;
+}
+
+.message.error {
+    color: white;
+    background: rgba(222, 0, 0, 0.2);
+    border-left: 3px solid var(--yu-red);
+}
+
+.message.success {
+    color: var(--success);
+    background: rgba(85, 255, 85, 0.1);
+    border-left: 3px solid var(--success);
+}
+
+.message.info {
+    color: #55ccff;
+    background: rgba(85, 204, 255, 0.1);
+    border-left: 3px solid #55ccff;
+}
+
+/* ============================================================================
+   LOADING STATE
+   ============================================================================ */
+
+.loading {
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 16px;
+    height: 16px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-top: 2px solid white;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: translateY(-50%) rotate(360deg);
+    }
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+    :root {
+        font-size: 14px;
+    }
+
+    .star {
+        font-size: 1.2rem;
+    }
+
+    .star.large {
+        font-size: 2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    :root {
+        font-size: 12px;
+    }
+
+    button {
+        font-size: 0.8rem;
+        padding: 10px;
+    }
+}

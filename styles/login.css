@@ -1,0 +1,105 @@
+/* ============================================================================
+   LOGIN PAGE STYLES
+   ============================================================================ */
+
+body.login-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-container {
+    background: var(--bg-panel);
+    padding: 2.5rem 2rem;
+    border-radius: 4px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    width: 100%;
+    max-width: 350px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+}
+
+.login-container .flag-header {
+    height: 15px;
+}
+
+.login-container .flag-stripe {
+    height: 5px;
+}
+
+.login-container h1 {
+    margin: 0 0 5px 0;
+    font-size: 1.4rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-light);
+}
+
+.login-container > p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    margin-bottom: 25px;
+}
+
+.login-container form {
+    text-align: left;
+}
+
+.login-container .form-group {
+    margin-bottom: 15px;
+}
+
+.login-form-submit {
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* ============================================================================
+   AUDIO TOGGLE
+   ============================================================================ */
+
+#audio-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(222, 0, 0, 0.3);
+    border: 2px solid var(--yu-red);
+    color: var(--yu-red);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    z-index: 1000;
+}
+
+#audio-toggle:hover {
+    background: rgba(222, 0, 0, 0.5);
+}
+
+#audio-toggle.muted {
+    background: rgba(100, 100, 100, 0.3);
+    border-color: #666;
+    color: #666;
+}
+
+/* ============================================================================
+   RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 480px) {
+    .login-container {
+        padding: 2rem 1.5rem;
+    }
+
+    .login-container h1 {
+        font-size: 1.2rem;
+    }
+}

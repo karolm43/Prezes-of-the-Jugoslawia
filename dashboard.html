@@ -1,276 +1,495 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
+    <!-- ============================================================================
+         METADATA
+         ============================================================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKN Jugosławia - Panel Zarządzania</title>
+
+    <!-- ============================================================================
+         STYLESHEETS - Wyklęte CSS do osobnych plików
+         ============================================================================ -->
+    <link rel="stylesheet" href="styles/common.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+
+    <!-- ============================================================================
+         EXTERNAL LIBRARIES
+         ============================================================================ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <style>
-        :root {
-            --yu-blue: #003893;
-            --yu-red: #DE0000;
-            --yu-yellow: #FCD116;
-            --bg-dark: #121212;
-            --bg-panel: #1e1e1e;
-            --text-light: #f5f5f5;
-            --border-color: #333;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .header {
-            width: 100%;
-            background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            padding: 15px 0;
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-            padding: 15px 40px;
-        }
-        .flag-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 6px;
-            display: flex;
-            flex-direction: column;
-        }
-        .flag-stripe { height: 2px; width: 100%; }
-        .stripe-blue { background-color: var(--yu-blue); }
-        .stripe-white { background-color: #ffffff; }
-        .stripe-red { background-color: var(--yu-red); }
-        
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .star {
-            color: var(--yu-red);
-            text-shadow: -1px -1px 0 var(--yu-yellow), 1px -1px 0 var(--yu-yellow), -1px 1px 0 var(--yu-yellow), 1px 1px 0 var(--yu-yellow);
-            font-size: 1.5rem;
-            line-height: 1;
-        }
-        h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 1px; }
-        
-        .logout-btn {
-            background: transparent;
-            border: 1px solid #555;
-            color: #aaa;
-            padding: 8px 15px;
-            cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-        .logout-btn:hover { background: #333; color: white; }
-
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            width: 100%;
-            max-width: 1000px;
-            padding: 30px 20px;
-            box-sizing: border-box;
-        }
-
-        .panel {
-            background: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 20px;
-        }
-        .panel-full { grid-column: 1 / -1; }
-        
-        .panel h2 {
-            margin-top: 0;
-            font-size: 1rem;
-            color: #888;
-            text-transform: uppercase;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-        }
-
-        .stats-container {
-            display: flex;
-            justify-content: space-between;
-        }
-        .stat-box {
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 5px;
-        }
-        .stat-label {
-            font-size: 0.8rem;
-            color: #aaa;
-            text-transform: uppercase;
-        }
-
-        .agenda-content {
-            color: var(--yu-yellow);
-            font-size: 0.95rem;
-            line-height: 1.5;
-            border-left: 3px solid var(--yu-red);
-            padding-left: 15px;
-            background: rgba(222, 0, 0, 0.05);
-            padding: 15px;
-        }
-
-        .event-box {
-            background: #2a2a2a;
-            padding: 20px;
-            border: 1px solid #444;
-            border-radius: 2px;
-        }
-        .event-title {
-            font-size: 1.2rem;
-            margin: 0 0 10px 0;
-            color: white;
-        }
-        .event-desc {
-            color: #ccc;
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 20px;
-        }
-        
-        .vote-buttons {
-            display: flex;
-            gap: 15px;
-        }
-        .btn-vote {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            font-weight: bold;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-vote:hover { opacity: 0.8; }
-        .btn-za { background: var(--yu-blue); color: white; }
-        .btn-przeciw { background: var(--yu-red); color: white; }
-
-    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3/dist/chart.min.js"></script>
 </head>
-<body>
 
+<body class="dashboard-page">
+    <!-- ============================================================================
+         HEADER - Pasek nawigacyjny z statusem gry
+         ============================================================================ -->
     <header class="header">
+        <!-- Yugoslav Flag -->
         <div class="flag-header">
             <div class="flag-stripe stripe-blue"></div>
             <div class="flag-stripe stripe-white"></div>
             <div class="flag-stripe stripe-red"></div>
         </div>
+
+        <!-- Branding -->
         <div class="brand">
             <div class="star">★</div>
             <h1>SKN Jugosławia</h1>
         </div>
-        <button class="logout-btn" id="logout-btn">Wyloguj sesję</button>
+
+        <!-- Header Actions - Turn info i logout button -->
+        <div class="header-actions">
+            <div class="turn-indicator">
+                Tura: <span class="turn-number" id="turn-number">1</span>
+            </div>
+            <button class="btn-secondary" id="logout-btn">Wyloguj sesję</button>
+        </div>
     </header>
 
+    <!-- ============================================================================
+         MAIN DASHBOARD GRID - Sekcje gry
+         ============================================================================ -->
     <div class="dashboard-grid">
+        <!-- ========== GLOBAL STATE PANEL ========== -->
         <div class="panel panel-full">
             <h2>Stan Państwa (Zarząd Centralny)</h2>
-            <div class="stats-container">
+            <div class="stats-container" id="stats-container">
+                <!-- Dynamically filled by JavaScript -->
                 <div class="stat-box">
-                    <div class="stat-value">145k</div>
+                    <div class="stat-value" id="budget-stat">100k</div>
                     <div class="stat-label">Budżet Operacyjny</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">68%</div>
+                    <div class="stat-value" id="reputation-stat">50%</div>
                     <div class="stat-label">Reputacja</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">42</div>
-                    <div class="stat-label">Wpływy Polityczne</div>
+                    <div class="stat-value" id="morale-stat">60%</div>
+                    <div class="stat-label">Morale Społeczne</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="stability-stat">75%</div>
+                    <div class="stat-label">Stabilność</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="security-stat">70%</div>
+                    <div class="stat-label">Bezpieczeństwo</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value" id="economy-stat">60%</div>
+                    <div class="stat-label">Gospodarka</div>
                 </div>
             </div>
         </div>
 
+        <!-- ========== PLAYER PROFILE / DOSSIER ========== -->
         <div class="panel">
             <h2>Classified Dossier</h2>
-            <div id="private-profile" class="agenda-content">
-                Fetching isolated data stream...
+            <div id="private-profile" class="dossier-content">
+                Loading player data...
             </div>
         </div>
 
+        <!-- ========== ACTIVE VOTING EVENT ========== -->
         <div class="panel">
-            <h2>Aktywne Wydarzenie (Głosowanie)</h2>
-            <div class="event-box">
-                <h3 class="event-title">Propozycja: Defilada Majowa</h3>
-                <p class="event-desc">
-                    Zorganizowanie ogólnokrajowej defilady podniesie nastroje społeczne, jednak wymaga relokacji znacznych środków z funduszu infrastrukturalnego.
-                    <br><br>
-                    <strong>Skutki:</strong> +15% Reputacja, -30k Budżet.
-                </p>
-                <div class="vote-buttons">
-                    <button class="btn-vote btn-za">Głosuj ZA</button>
-                    <button class="btn-vote btn-przeciw">Głosuj PRZECIW</button>
+            <h2>Aktywne Głosowanie</h2>
+            <div id="event-container" class="event-box">
+                <div id="event-content">
+                    <p style="color: #888;">Ładowanie aktywnego zdarzenia...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== TABS: HISTORY & PLAYERS ========== -->
+        <div class="panel panel-full">
+            <h2>Informacje Dodatkowe</h2>
+
+            <!-- Tab Buttons -->
+            <div class="tabs">
+                <button class="tab-button active" data-tab="history">Historia zmian</button>
+                <button class="tab-button" data-tab="players">Lista graczy</button>
+            </div>
+
+            <!-- History Tab Content -->
+            <div id="history" class="tab-content active">
+                <div class="history-list" id="history-list">
+                    <p style="color: #888;">Brak zmian w historii</p>
+                </div>
+            </div>
+
+            <!-- Players Tab Content -->
+            <div id="players" class="tab-content">
+                <div class="player-list" id="player-list">
+                    <p style="color: #888;">Ładowanie listy graczy...</p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ============================================================================
+         SCRIPTS - Logika gry
+         ============================================================================ -->
+    <script src="js/auth.js"></script>
     <script>
-        const client = supabase.createClient('https://pswpuernfyfsijnscnwt.supabase.co', 'sb_publishable_XUyqOs0SmAK4tezMYjdBDg_7l5S6bbb');
+        /**
+         * ============================================================================
+         * DASHBOARD PAGE LOGIC
+         * ============================================================================
+         * 
+         * Funkcje:
+         * - Załadowanie stanu gry z bazy
+         * - Wyświetlenie danych gracza
+         * - Real-time updaty głosów
+         * - Obsługa wylogowania
+         * - Tab navigation
+         */
 
-        // Weryfikacja sesji
-        async function checkSession() {
-            const { data: { session } } = await client.auth.getSession();
-            if (!session) {
+        // ========== KONFIGURACJA SUPABASE ==========
+        const SUPABASE_URL = 'https://pswpuernfyfsijnscnwt.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_XUyqOs0SmAK4tezMYjdBDg_7l5S6bbb';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const auth = new AuthManager(supabaseClient);
+
+        // ========== GLOBAL STATE ==========
+        let currentGameState = null;
+        let currentEvent = null;
+        let currentPlayer = null;
+
+        // ========== DOM ELEMENTS ==========
+        const statsContainer = document.getElementById('stats-container');
+        const privateProfile = document.getElementById('private-profile');
+        const eventContainer = document.getElementById('event-container');
+        const logoutBtn = document.getElementById('logout-btn');
+        const historyList = document.getElementById('history-list');
+        const playerList = document.getElementById('player-list');
+        const turnNumber = document.getElementById('turn-number');
+
+        // ========== PAGE INITIALIZATION ==========
+        /**
+         * Sprawdź sesję i załaduj dane
+         */
+        window.addEventListener('DOMContentLoaded', async () => {
+            console.log('🎮 Dashboard loaded');
+
+            // Weryfikacja sesji
+            const { user, error } = await auth.checkSession();
+            if (!user) {
+                console.log('❌ No session, redirecting to login');
                 window.location.href = 'index.html';
-            }
-        }
-        checkSession();
-        async function executeProfileRetrieval() {
-            const { data: { user } } = await client.auth.getUser();
-            
-            if (!user) return;
-        
-            const { data, error } = await client
-                .from('profiles')
-                .select('alias, Departament, Agenda')
-                .eq('id', user.id)
-                .single();
-        
-            const container = document.getElementById('private-profile');
-        
-            if (error) {
-                container.innerText = "Access Denied or Record Unallocated.";
                 return;
             }
-        
-            container.innerHTML = `
-                <strong>Alias:</strong> ${data.alias || 'Unassigned'}<br>
-                <strong>Department:</strong> ${data.Departament || 'Unassigned'}<br><br>
-                <strong>Active Directive:</strong><br>${data.Agenda || 'Standby'}
+
+            console.log('✅ Session valid, loading game data...');
+
+            // Załaduj dane
+            await loadGameState();
+            await loadPlayerProfile();
+            await loadCurrentEvent();
+            await loadPlayersList();
+        });
+
+        // ========== LOAD GAME STATE ==========
+        /**
+         * Załaduj globalny stan gry ze strony state_global
+         */
+        async function loadGameState() {
+            console.log('📊 Loading game state...');
+
+            const { data, error } = await supabaseClient
+                .from('state_global')
+                .select('*')
+                .eq('id', 1)
+                .single();
+
+            if (error) {
+                console.error('❌ Error loading game state:', error);
+                return;
+            }
+
+            currentGameState = data;
+            console.log('✅ Game state loaded:', data);
+            updateStatsDisplay();
+            subscribeToStateUpdates();
+        }
+
+        // ========== UPDATE STATS DISPLAY ==========
+        /**
+         * Wyświetl statystyki stanu gry
+         */
+        function updateStatsDisplay() {
+            if (!currentGameState) return;
+
+            // Mapowanie stat-name -> element ID
+            const statMap = {
+                'budget': document.getElementById('budget-stat'),
+                'reputation': document.getElementById('reputation-stat'),
+                'social_morale': document.getElementById('morale-stat'),
+                'stability': document.getElementById('stability-stat'),
+                'security': document.getElementById('security-stat'),
+                'economy': document.getElementById('economy-stat'),
+            };
+
+            Object.entries(statMap).forEach(([key, element]) => {
+                if (!element) return;
+
+                let value = currentGameState[key];
+
+                // Format budżetu
+                if (key === 'budget') {
+                    value = value > 0 ? `${(value / 1000).toFixed(0)}k` : value;
+                } else if (typeof value === 'number' && value <= 100) {
+                    // Procenty dla wartości 0-100
+                    value = `${value}%`;
+                }
+
+                element.innerText = value;
+
+                // CSS class dla warningów
+                if (typeof currentGameState[key] === 'number') {
+                    element.classList.remove('warning', 'critical');
+                    if (currentGameState[key] < 30) {
+                        element.classList.add('critical');
+                    } else if (currentGameState[key] < 50) {
+                        element.classList.add('warning');
+                    }
+                }
+            });
+        }
+
+        // ========== LOAD PLAYER PROFILE ==========
+        /**
+         * Załaduj profil aktualnego gracza
+         */
+        async function loadPlayerProfile() {
+            console.log('📋 Loading player profile...');
+
+            const { profile, error } = await auth.getProfile();
+
+            if (error) {
+                privateProfile.innerText = 'Access Denied or Record Unallocated.';
+                return;
+            }
+
+            currentPlayer = profile;
+            privateProfile.innerHTML = `
+                <strong>Alias:</strong> ${profile.alias || 'Unassigned'}<br>
+                <strong>Department:</strong> ${profile.departament || 'Unassigned'}<br>
+                <strong>Role:</strong> ${profile.role || 'Player'}<br><br>
+                <strong>Active Directive:</strong><br>${profile.agenda || 'Standby'}
+            `;
+
+            console.log('✅ Profile loaded:', profile);
+        }
+
+        // ========== LOAD CURRENT EVENT ==========
+        /**
+         * Załaduj aktywne głosowanie
+         */
+        async function loadCurrentEvent() {
+            console.log('🗳️  Loading current event...');
+
+            const { data, error } = await supabaseClient
+                .from('events')
+                .select('*')
+                .eq('status', 'voting')
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .single();
+
+            if (error) {
+                console.log('ℹ️  No active event');
+                eventContainer.innerHTML = '<p style="color: #888;">Brak aktywnego głosowania</p>';
+                return;
+            }
+
+            currentEvent = data;
+            console.log('✅ Event loaded:', data);
+            updateEventDisplay();
+            subscribeToVoteUpdates();
+        }
+
+        // ========== UPDATE EVENT DISPLAY ==========
+        /**
+         * Wyświetl kartę zdarzenia z efektami i przyciskami głosowania
+         */
+        function updateEventDisplay() {
+            if (!currentEvent) return;
+
+            const effects = currentEvent.effects || {};
+            let effectsHTML = '';
+
+            Object.entries(effects).forEach(([key, value]) => {
+                const className = value > 0 ? 'effect-positive' : 'effect-negative';
+                const sign = value > 0 ? '+' : '';
+                effectsHTML += `
+                    <div class="effect-item">
+                        <span>${key}:</span>
+                        <span class="${className}">${sign}${value}</span>
+                    </div>
+                `;
+            });
+
+            eventContainer.innerHTML = `
+                <h3 class="event-title">${currentEvent.title}</h3>
+                <p class="event-description">${currentEvent.description}</p>
+                <div class="event-effects">
+                    <strong>Skutki głosowania:</strong>
+                    ${effectsHTML || '<p>Brak zmian</p>'}
+                </div>
+                <div class="vote-buttons">
+                    <button class="btn-vote btn-yes" onclick="submitVote(true)">Głosuj ZA</button>
+                    <button class="btn-vote btn-no" onclick="submitVote(false)">Głosuj PRZECIW</button>
+                </div>
+                <div class="vote-counter">
+                    <div class="vote-count yes">
+                        <div class="vote-count-number" id="vote-yes">${currentEvent.vote_yes}</div>
+                        <div class="vote-count-label">ZA</div>
+                    </div>
+                    <div class="vote-count no">
+                        <div class="vote-count-number" id="vote-no">${currentEvent.vote_no}</div>
+                        <div class="vote-count-label">PRZECIW</div>
+                    </div>
+                </div>
             `;
         }
-        
-        executeProfileRetrieval();
-        // Obsługa wylogowania
-        document.getElementById('logout-btn').addEventListener('click', async () => {
-            await client.auth.signOut();
+
+        // ========== SUBMIT VOTE ==========
+        /**
+         * Wyślij głos
+         */
+        async function submitVote(voteYes) {
+            if (!currentEvent) {
+                console.error('❌ No active event');
+                return;
+            }
+
+            console.log(`🗳️  Submitting vote: ${voteYes ? 'YES' : 'NO'}`);
+
+            const { error } = await supabaseClient.from('votes').upsert({
+                event_id: currentEvent.id,
+                player_id: auth.getCurrentUserId(),
+                turn_id: currentGameState.turn_number,
+                vote: voteYes,
+            });
+
+            if (error) {
+                console.error('❌ Error submitting vote:', error);
+                alert('Błąd podczas głosowania: ' + error.message);
+                return;
+            }
+
+            console.log('✅ Vote submitted');
+        }
+
+        // ========== LOAD PLAYERS LIST ==========
+        /**
+         * Załaduj listę graczy
+         */
+        async function loadPlayersList() {
+            console.log('👥 Loading players list...');
+
+            const { data, error } = await supabaseClient
+                .from('profiles')
+                .select('id, alias, role, influence_score')
+                .eq('active', true);
+
+            if (error) {
+                console.error('❌ Error loading players:', error);
+                playerList.innerHTML = '<p style="color: #888;">Błąd ładowania graczy</p>';
+                return;
+            }
+
+            let playersHTML = '';
+            data.forEach((player) => {
+                const voted = true; // TODO: Sprawdź z bazy czy gracz zagłosował
+                const statusClass = voted ? 'voted' : 'pending';
+                const statusText = voted ? '✅ Zagłosował' : '⏳ Czeka';
+
+                playersHTML += `
+                    <div class="player-item">
+                        <span class="player-name">${player.alias}</span>
+                        <div>
+                            <span class="player-influence">Wpływ: ${player.influence_score || 0}</span>
+                            <span class="player-status ${statusClass}">${statusText}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            playerList.innerHTML = playersHTML || '<p style="color: #888;">Brak graczy</p>';
+            console.log('✅ Players list loaded:', data.length);
+        }
+
+        // ========== REAL-TIME SUBSCRIPTIONS ==========
+        /**
+         * Subskrybuj zmiany stanu gry
+         */
+        function subscribeToStateUpdates() {
+            supabaseClient
+                .channel('state_global:id=eq.1')
+                .on('postgres_changes',
+                    { event: 'UPDATE', schema: 'public', table: 'state_global' },
+                    (payload) => {
+                        console.log('📊 State updated:', payload.new);
+                        currentGameState = payload.new;
+                        updateStatsDisplay();
+                    }
+                )
+                .subscribe();
+        }
+
+        /**
+         * Subskrybuj zmiany głosów
+         */
+        function subscribeToVoteUpdates() {
+            if (!currentEvent) return;
+
+            supabaseClient
+                .channel(`votes:event_id=eq.${currentEvent.id}`)
+                .on('postgres_changes',
+                    { event: '*', schema: 'public', table: 'votes', filter: `event_id=eq.${currentEvent.id}` },
+                    (payload) => {
+                        console.log('🗳️  Vote update:', payload);
+                        // Reload event to get updated counts
+                        loadCurrentEvent();
+                    }
+                )
+                .subscribe();
+        }
+
+        // ========== LOGOUT ==========
+        logoutBtn.addEventListener('click', async () => {
+            console.log('👋 Logging out...');
+            await auth.logout();
             window.location.href = 'index.html';
+        });
+
+        // ========== TAB NAVIGATION ==========
+        /**
+         * Obsługa przełączania tabów
+         */
+        document.querySelectorAll('.tab-button').forEach((button) => {
+            button.addEventListener('click', () => {
+                const tabName = button.getAttribute('data-tab');
+
+                // Ukryj wszystkie tab contents
+                document.querySelectorAll('.tab-content').forEach((tab) => {
+                    tab.classList.remove('active');
+                });
+
+                // Usuń aktywną klasę ze wszystkich przycisków
+                document.querySelectorAll('.tab-button').forEach((btn) => {
+                    btn.classList.remove('active');
+                });
+
+                // Pokaż wybrany tab
+                document.getElementById(tabName).classList.add('active');
+                button.classList.add('active');
+            });
         });
     </script>
 </body>
+
 </html>
