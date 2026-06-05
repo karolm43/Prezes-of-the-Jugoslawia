@@ -1,57 +1,35 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <!-- ============================================================================
-         METADATA
-         ============================================================================ -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKN Jugosławia - Logowanie</title>
 
-    <!-- ============================================================================
-         STYLESHEETS - Wyklęte CSS do osobnych plików
-         ============================================================================ -->
     <link rel="stylesheet" href="styles/common.css">
     <link rel="stylesheet" href="styles/login.css">
 
-    <!-- ============================================================================
-         EXTERNAL LIBRARIES - Supabase dla autentykacji i bazy danych
-         ============================================================================ -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 
 <body class="login-page">
-    <!-- ============================================================================
-         BACKGROUND AUDIO - Muzyka ambientna
-         ============================================================================ -->
     <audio id="ambient-audio" loop preload="auto">
         <source src="theme.ogg" type="audio/ogg">
     </audio>
 
-    <!-- ============================================================================
-         AUDIO TOGGLE BUTTON - Przycisk do sterowania muzyką
-         ============================================================================ -->
-    <button id="audio-toggle" title="Włącz/Wyłącz muzykę">🔊</button>
+    <button id="audio-toggle" title="Włącz/Wyłącz muzykę">Audio</button>
 
-    <!-- ============================================================================
-         LOGIN CONTAINER - Główny formularz logowania
-         ============================================================================ -->
     <div class="login-container">
-        <!-- Yugoslav Flag Header -->
         <div class="flag-header">
             <div class="flag-stripe stripe-blue"></div>
             <div class="flag-stripe stripe-white"></div>
             <div class="flag-stripe stripe-red"></div>
         </div>
 
-        <!-- Title & Branding -->
         <div class="star large">★</div>
         <h1>SKN Jugosławia</h1>
         <p>Autoryzacja Danych</p>
 
-        <!-- Login Form -->
         <form id="login-form">
-            <!-- Email Input -->
             <div class="form-group">
                 <label for="email">E-mail (Identyfikator)</label>
                 <input
@@ -62,7 +40,6 @@
                     autocomplete="username">
             </div>
 
-            <!-- Password Input -->
             <div class="form-group">
                 <label for="password">Hasło dostępu</label>
                 <input
@@ -73,39 +50,33 @@
                     autocomplete="current-password">
             </div>
 
-            <!-- Submit Button -->
             <button type="submit" id="submit-btn" class="btn-primary login-form-submit">
                 Zaloguj do systemu
             </button>
         </form>
 
-        <!-- Status/Error Message -->
         <div id="message" class="message"></div>
     </div>
 
-    <!-- ============================================================================
-         SCRIPTS - Logika aplikacji
-         ============================================================================ -->
     <script src="js/auth.js"></script>
     <script>
         /**
          * ============================================================================
          * LOGIN PAGE LOGIC
          * ============================================================================
-         * 
-         * Funkcje:
-         * - Inicjalizacja Supabase
-         * - Obsługa formularza logowania
-         * - Wyciszenie/włączenie muzyki
-         * - Weryfikacja sesji
+         * * Functions:
+         * - Initialize Supabase
+         * - Login form handling
+         * - Mute/unmute music
+         * - Session verification
          */
 
-        // ========== KONFIGURACJA SUPABASE ==========
-        // TODO: Te wartości znajdziesz w Supabase Dashboard > Settings > API
+        // ========== SUPABASE CONFIGURATION ==========
+        // TODO: These values can be found in Supabase Dashboard > Settings > API
         const SUPABASE_URL = 'https://pswpuernfyfsijnscnwt.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_XUyqOs0SmAK4tezMYjdBDg_7l5S6bbb';
 
-        // Stwórz klienta Supabase
+        // Create Supabase client
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         const auth = new AuthManager(supabaseClient);
 
@@ -118,71 +89,71 @@
         const bgAudio = document.getElementById('ambient-audio');
         const audioToggle = document.getElementById('audio-toggle');
 
-        // ========== OBSŁUGA FORMULARZA LOGOWANIA ==========
+        // ========== LOGIN FORM HANDLING ==========
         loginForm.addEventListener('submit', async (event) => {
             event.preventDefault();
 
             const email = emailInput.value.trim();
             const password = passwordInput.value;
 
-            // Walidacja
+            // Validation
             if (!email || !password) {
                 showMessage('Wypełnij wszystkie pola!', 'error');
                 return;
             }
 
-            // Wyświetl loading state
+            // Display loading state
             submitBtn.classList.add('loading');
             submitBtn.disabled = true;
             submitBtn.innerText = 'Logowanie...';
             hideMessage();
 
-            // Spróbuj zalogować
+            // Attempt to log in
             const { user, error } = await auth.login(email, password);
 
             if (error) {
-                // Błąd logowania
-                showMessage(`❌ ${error.message}`, 'error');
+                // Login error
+                showMessage(`${error.message}`, 'error');
                 submitBtn.classList.remove('loading');
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Zaloguj do systemu';
                 return;
             }
 
-            // Zalogowanie się powiodło
-            showMessage('✅ Zalogowano pomyślnie! Przechodzę do gry...', 'success');
+            // Login successful
+            showMessage('Zalogowano pomyślnie! Przechodzę do gry...', 'success');
             submitBtn.innerText = 'Wchodzę do gry...';
 
-            // Poczekaj 1 sekundę i przekieruj
+            // Wait 1 second and redirect
             setTimeout(() => {
                 window.location.href = 'dashboard.html';
             }, 1000);
         });
 
-        // ========== OBSŁUGA MUZYKI ==========
+        // ========== MUSIC HANDLING ==========
         /**
-         * Ustaw głośność muzyki na niskie natężenie
+         * Set music volume to low
          */
         bgAudio.volume = 0.15;
 
         /**
-         * Przycisk toggle do wyciszenia/włączenia muzyki
+         * Toggle button to mute/unmute music
          */
         audioToggle.addEventListener('click', () => {
             if (bgAudio.paused) {
                 bgAudio.play();
                 audioToggle.classList.remove('muted');
-                audioToggle.textContent = '🔊';
+                audioToggle.textContent = 'ON';
             } else {
                 bgAudio.pause();
                 audioToggle.classList.add('muted');
-                audioToggle.textContent = '🔇';
+                audioToggle.textContent = 'OFF';
             }
         });
 
         /**
-         * Rozpocznij muzykę gdy użytkownik kliknie gdziekolwiek na stronie
-         * (ze względu na autoplay policies w przeglądarkach)
+         * Start music when user clicks anywhere on the page
+         * (due to browser autoplay policies)
          */
         document.body.addEventListener('click', () => {
             if (bgAudio.paused) {
@@ -192,9 +163,9 @@
 
         // ========== UTILITY FUNCTIONS ==========
         /**
-         * Wyświetl wiadomość (błąd/sukces/info)
-         * @param {string} text - Treść wiadomości
-         * @param {string} type - Typ: 'error', 'success', 'info'
+         * Display message (error/success/info)
+         * @param {string} text - Message content
+         * @param {string} type - Type: 'error', 'success', 'info'
          */
         function showMessage(text, type = 'info') {
             messageEl.innerText = text;
@@ -202,7 +173,7 @@
         }
 
         /**
-         * Ukryj wiadomość
+         * Hide message
          */
         function hideMessage() {
             messageEl.classList.remove('show');
@@ -210,14 +181,14 @@
 
         // ========== PAGE LOAD ==========
         /**
-         * Sprawdź czy użytkownik jest już zalogowany
-         * Jeśli tak - przejdź do dashboard
+         * Check if user is already logged in
+         * If yes - redirect to dashboard
          */
         window.addEventListener('DOMContentLoaded', async () => {
-            console.log('🎮 Login page loaded');
+            console.log('Login page loaded');
             const { user, error } = await auth.checkSession();
             if (user) {
-                console.log('✅ User already logged in, redirecting...');
+                console.log('User already logged in, redirecting...');
                 window.location.href = 'dashboard.html';
             }
         });
